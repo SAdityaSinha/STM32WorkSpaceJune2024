@@ -1,0 +1,42 @@
+
+1st 
+Note the objectiev
+--> get the led blink
+--> get into your board specific manual 
+--> and get the port attached to the LED2 (green led)
+    --> got it on um1724 page 23
+
+    ////
+
+//asume we did the blinking some how 
+//setingup the function with the header files and everything correctly
+
+
+//now detecting the push of button(blue)
+
+2nd
+to get the button(blue) access
+--> searching in the doc um1724
+--> our button is B1 --> it's PC13(pin2) @um1724 page 24
+--> so P C 13
+    --> Peripheral
+    --> GPIOC (i.e. GPIO C )
+    --> then pin 13 
+
+--> now trying to see the GPIOC
+    --> go to rm0390 for GPIOx pin and bit value knowledge 
+    --> @ rm0390 page 187
+
+    --> MODERy : bits written to configure I/O direction mode.
+        --> 00 input
+    --> OTYPERy : to configure the output type of the I/O port.
+        --> 0 Output push-pull
+    --> OSPEEDR : to configure I/O speed
+        --> 00 - I am taking it to do at low speed 
+    --> PUPDR : to configure pullup or pulldown
+        --> using this to read the input
+        --> 01 Pull up
+        --> 10 pulldown
+    
+
+

@@ -1,0 +1,39 @@
+Day : 12-7-24
+	1. Led blinking basic
+	2. Led blink on blue button ( and reverse )
+
+	1. blink LED at different speed one after another in a cyclic way 
+	2. change speed on button pressed
+	3. now do the led blinking with external blinking use bread board and led (using port PA1)
+	4. get 4 or 8 led and then light to blink from lsb -> msb and on press(PC13) msb->lsb
+
+Day : 13-7-24
+	1. Use Pre Created stm32 Library to do all the previous assignment 
+
+	1. Learn arctecture section of Processors
+	2. Explore the header files {specially stm32f44}
+	3. Get breif about ADC, DAC, USART, Timer, I2C, SPI, CAN, PWM
+	4. NVIC's Structure (read about it)
+
+	5. Get general idea of Oscilator, 
+	6. Why specifically crystal Oscilator is only used
+	7. Diodes and it's appication in rectifiers 
+	9. Transistor and it's appication in Amplifiers
+	10. digital Electronics (application oriendet learning)
+		JKFF, DFF(delay/data)	(ff FlipFlop)
+		SRFF
+		Shift registers
+		counters 
+		ripple counters
+		decade counters
+		sensors
+			obstacle
+			IR
+			DC motors
+			L293D - Motor Driver
+
+	1. Why AC voltage is measured in RMS(root mean square)
+
+
+
+

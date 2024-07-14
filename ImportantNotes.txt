@@ -1,0 +1,80 @@
+VLSH
+ASICK
+
+
+//Course Content
+    1. Timer (Pold Mode)
+    2. Timer Interept Mode
+    3. External Interept (button Interept)
+    4. USART/ U ART (universal asyincronous synchronous ....)
+    5. ADC (Analog to Digital Convertior)
+    5. ADC with multiple channel
+    6. ADC with printer
+    7. ADC multiple channel with printer
+    8. ADC with USART
+    9. ADC multi channel USART
+    10. Pulse with modulation
+    11. RTC (real time clock / system clock)
+    12. RTC with I2C DS-3231 (I2C is a communication protocol)
+    13. SPI (serial Peripheral interphase)
+    14. CAN (controller area network)
+            CAN Loop back
+            CAN multiport
+
+
+
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+ARM Corex - M4 : look at the image while reading this 
+                    ARM Corex M4
+                    is the actual CPU in the microcontroller
+                    Microcontroller is not the board
+
+
+
+
+
+NVIC - Nested Vectored Interrupt Controlled :
+        responsible for handiling the interupt reauest
+        it looks to the current work and even pause it on possible state
+        and store that current state adderes in a stack then jumps to look at that interupt
+
+
+FPU - Float Point Unit
+        responsible for calculating 
+        doing mathematical process and calculation
+
+
+
+in Microcontroller
+
+    Flash   it's a PROM : programable rom
+    SRAM
+
+    look for the .ioc file (.ioc -  Input Output Clock)
+    Clocks 2 types
+        HSE : High Speed Externa;
+        HSI :            Internal
+    
+    PLL unit to configure the Externa frequence 
+    Clock configuration //is an important interface
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
