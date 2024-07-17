@@ -1,13 +1,14 @@
 /*
- * blinkLED.c
+ * passVerifier.c
  *
- *  Created on: Jul 13, 2024
+ *  Created on: Jul 15, 2024
  *      Author: sinha
  */
-#include"blinkLED.h"
-//#include<stdio.h>
 
-//#include"RCC_GPIO.h"
+#include"passVerifier.h"
+#include<stdint.h>
+
+
 
 void normalDelay(int delayAmount)
 {
@@ -20,18 +21,13 @@ void normalDelay(int delayAmount)
 
 bool isButton2Pressed(bool arePortsSet,bool buttonStatus )
 {
-
-//	printf("buttonStatus : %d",num);
 	if(arePortsSet && buttonStatus == 1 )
 	{
-		//reading the bit from button
-//		printf("bool true\n");
 		return true;
 	}
-//	printf("bool false\n");
-
 	return false;
 }
+
 
 void setAllVerifierNULL(bool *passVerifier)
 {
@@ -124,6 +120,4 @@ bool updateOnButtonRelease(int *passCode,bool *passVerifier,short int inputDetec
 	return false;
 
 }
-
-
 

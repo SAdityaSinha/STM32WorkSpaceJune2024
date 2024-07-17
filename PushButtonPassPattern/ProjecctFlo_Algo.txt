@@ -1,0 +1,13 @@
+///////////
+setting up my RCC_GPIO.h
+file 
+
+    now set the RCC address and all it's corosponding resisters 
+    skipping the above procedure to sett all 
+    now directly going for the base add. of 
+
+    now set the structure for the GPIO;
+    then define it's one with the base address as of GPIOA
+    or GPIOC if required
+
+    now enabling the pin in RCC_AHB1ENR for enabling the clock at GPIOA

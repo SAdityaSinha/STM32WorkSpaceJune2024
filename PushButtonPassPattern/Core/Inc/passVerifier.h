@@ -1,23 +1,19 @@
 /*
- * blinkLED.h
+ * passVerifier.h
  *
- *  Created on: Jul 13, 2024
+ *  Created on: Jul 15, 2024
  *      Author: sinha
  */
 
-#ifndef BLINKLED_H_
-#define BLINKLED_H_
+#ifndef INC_PASSVERIFIER_H_
+#define INC_PASSVERIFIER_H_
 
-
-#endif /* BLINKLED_H_ */
-
-#include<stdint.h>
-#include<stdbool.h>
+#include"stdbool.h"
+// #include
 
 void normalDelay(int delayAmount);
 
-void blinkLedNormaly(int delayAmount);
-//define blinkLedNormaly in main
+void blinkLedXtime(int times);      //define in main()
 
 bool isButton2Pressed(bool arePortsSet, bool buttonStatus);
 
@@ -25,9 +21,7 @@ bool updateOnButtonRelease(int *passCode,bool *passVerifier,short int inputDetec
 
 void setAllVerifierNULL(bool *passVerifier);
 
-void blinkLedXtime(int times);
 
 
 
-
-
+#endif /* INC_PASSVERIFIER_H_ */

@@ -1,12 +1,13 @@
 /*
  * RCC_GPIO.h
  *
- *  Created on: Jul 13, 2024
+ *  Created on: Jul 15, 2024
  *      Author: sinha
  */
 
-#ifndef RCC_GPIO_H_
-#define RCC_GPIO_H_
+#ifndef INC_RCC_GPIO_H_
+#define INC_RCC_GPIO_H_
+
 
 
 #include<stdint.h>
@@ -39,4 +40,10 @@ typedef struct{
 #define GPIOC                       ((GPIO_TypeDef *)GPIOC_BASE)
 
 
-#endif /* RCC_GPIO_H_ */
+#define ENABLE_LED2 (GPIOA->ODR |= (1<<5))
+#define DISABLE_LED2 (GPIOA->ODR &= ~(1<<5))
+
+// #define USER_BUTTON ()
+
+
+#endif /* INC_RCC_GPIO_H_ */

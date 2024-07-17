@@ -38,6 +38,17 @@
 	#warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 	#endif
 
+	void blinkLedXtime(int times)
+	{
+		for(int i=0;i<=times;i++)
+		{
+			GPIOA->ODR |= (1<<5);
+			normalDelay(50);
+			GPIOA->ODR &=~(1<<5);
+			normalDelay(25);
+		}
+	}
+
 
 	void blinkLedNormaly(int delayAmount)
 	{
@@ -77,20 +88,67 @@
 
 		printf("Hello World!!!\n");
 		bool buttonStatus;
+
+
+		////////////////////////
+		// for creating the pass code to unlock(blink);
+		short int onTime =0;
+		int inputDetected;
+		//setting the pass code
+		// 0(short press)	:	1(long press)
+		int a[4] = {0,1,1,0};
+		// 4 bool for managing seriality of code
+		bool passVerifier[4] = {false,false,false,false}; 	
+		bool isVerified = false;
+
+		GPIOA->ODR &=~(1<<5); //force setting it to off
+//		GPIOA->ODR |= (1<<5);
+//		normalDelay(100);
 		/* Loop forever */
 		for(;;)
 		{
-//			blinkLedNormaly(10);
-			buttonStatus = GPIOC->IDR & (1<<13);
-			printf("%d \n",GPIOC->IDR);
-			if(isButton2Pressed(isInputPortSet,buttonStatus))
+
+//			GPIOA->ODR |= (1<<5);
+
+
+			if(isVerified)
 			{
-//				printf("Main - true\n");
-				blinkLedNormaly(11);
+				printf("Veriffied\n");
+				blinkLedNormaly(10);
 			}else
 			{
-				blinkLedNormaly(5);
-//				printf("Main - false\n");
+
+				buttonStatus = GPIOC->IDR & (1<<13);
+	//			printf("%d \n",GPIOC->IDR);
+				if(!isButton2Pressed(isInputPortSet,buttonStatus))
+				{
+					onTime +=1;
+//					printf(" ON : %d \n",onTime);		//making on<=3 && on>0 as short press 0
+												//and on>3 as long press 1
+
+	//				printf("Main - true\n");
+	//				blinkLedNormaly(11);
+				}else
+				{
+//					printf("Released Button\n");
+					if(onTime>0 && onTime<=30000)
+					{
+						inputDetected = 0;
+						blinkLedXtime(1);
+					}else if (onTime>30000)
+					{
+						inputDetected =1;
+						blinkLedXtime(5);
+					}
+
+//					GPIOA->ODR &=~(1<<5); //force off
+					isVerified = updateOnButtonRelease(a,passVerifier,inputDetected);
+					onTime = 0;
+
+
+	//				blinkLedNormaly(5);
+	//				printf("Main - false\n");
+				}
 			}
 		}
 

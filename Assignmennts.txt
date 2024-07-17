@@ -34,6 +34,9 @@ Day : 13-7-24
 
 	1. Why AC voltage is measured in RMS(root mean square)
 
+Day : 15-7-24
+	1. Create  a new project no use of header file or any Online resources 
+	2. Timer Pold method program project to get the unifor delay
 
 
 

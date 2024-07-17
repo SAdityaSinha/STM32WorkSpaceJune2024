@@ -33,6 +33,7 @@ ARM Corex - M4 : look at the image while reading this
                     Microcontroller is not the board
 
 
+Big Endian and Little Endian
 
 
 
