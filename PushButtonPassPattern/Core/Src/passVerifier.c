@@ -19,14 +19,6 @@ void normalDelay(int delayAmount)
 	for(uint32_t i=0;i<5000*delayAmount;i++);
 }
 
-bool isButton2Pressed(bool arePortsSet,bool buttonStatus )
-{
-	if(arePortsSet && buttonStatus == 1 )
-	{
-		return true;
-	}
-	return false;
-}
 
 
 void setAllVerifierNULL(bool *passVerifier)
@@ -36,7 +28,6 @@ void setAllVerifierNULL(bool *passVerifier)
 	passVerifier[2] =false;
 	passVerifier[3] =false;
 }
-
 
 
 bool updateOnButtonRelease(int *passCode,bool *passVerifier,short int inputDetected)
@@ -120,4 +111,11 @@ bool updateOnButtonRelease(int *passCode,bool *passVerifier,short int inputDetec
 	return false;
 
 }
+
+
+
+
+
+
+
 

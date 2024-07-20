@@ -1,0 +1,29 @@
+BUILDING EXTERNAL LED Blink
+
+///////////
+Get the port to blink the LED
+
+    now got selecting any one pin to serve as the output pin for LED so it can blink
+    for now we selected let's say  we go with D5-CN9 : PB5 (this PB5 got from um1724 -p35)
+    now getting a GND (any)
+
+    PB5 : GPIOB ---  - Base  : 0x4002 0400
+    5   : MODER :   01
+          OTYper:    0
+          OSPE  :   11
+          PUPDR :   00
+
+          ODR   :   1
+
+////////////////////////////////////
+
+1 for inturupt 
+    enable tim2 clock 
+    loand the cnt ,isr,arr variablesenable them for interupt
+    enable channel on nvic for tim2 
+        NVIC_ENABLE_IRQ(port no. for tim2)
+    start tim2
+
+//////////////////
+EXTERNAL interupt
+

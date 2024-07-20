@@ -39,4 +39,21 @@ Day : 15-7-24
 	2. Timer Pold method program project to get the unifor delay
 
 
+Day : 16-7-24
+
+
+Day : 17-7-24
+	1. Implement a 2 LEDs to blink in with 4 combinations with a help of 
+	   4 functions for each combination one after another and then put it 
+	   in cyclic form. Use only one function for GPIO initialisations.
+	2. Implement a LED blinking with a function having a following signature 
+	   for initialization of a port. Which can be used generically applied to 
+	   any port and pin number for input and output combination and then use 
+	   that port as a LED or as a switch. 
+	   GPIO_Init(PORT,PIN_Number,Input_Type)
+	   The first argument passed will tell which PORT needs to be initialized 
+	   The second argument will tell the pin number on that port
+	   Third argument will tell either input or output
+
+
 

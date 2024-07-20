@@ -16,14 +16,16 @@
  ******************************************************************************
  */
 
-#define OriginalCodeStyle
+ #define OriginalCodeStyle
 // #undef OriginalCodeStyle
 
- #define UseLibraryCode
- #undef UseLibraryCod 
+// #define UseLibraryCode
+// #undef UseLibraryCod 
 
+#define EXTERNAL_BLINK
+ #undef EXTERNAL_BLINK
 
-#ifdef OriginalCodeStyle  
+#ifdef OriginalCodeStyle || EXTERNAL_BLINK
 
 	#include <stdint.h>
 	#include <stdio.h>
@@ -58,6 +60,12 @@
 		normalDelay(delayAmount);
 	}
 
+
+#endif
+
+
+
+#ifdef OriginalCodeStyle  
 
 	int main(void)
 	{
@@ -153,4 +161,19 @@
 		}
 
 	}
+#endif
+
+
+
+
+#ifdef EXTERNAL_BLINK
+
+	int main()
+	{
+
+	}
+
+
+
+
 #endif

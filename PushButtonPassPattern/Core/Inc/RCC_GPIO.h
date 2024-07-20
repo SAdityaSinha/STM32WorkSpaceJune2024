@@ -40,9 +40,6 @@ typedef struct{
 #define GPIOC                       ((GPIO_TypeDef *)GPIOC_BASE)
 
 
-#define ENABLE_LED2 (GPIOA->ODR |= (1<<5))
-#define DISABLE_LED2 (GPIOA->ODR &= ~(1<<5))
-
 // #define USER_BUTTON ()
 
 

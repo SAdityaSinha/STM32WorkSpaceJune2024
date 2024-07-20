@@ -1,0 +1,13 @@
+DMA
+
+//
+SOURCE AND DESTINATION
+	memory to peripheral
+	peripheral to memory
+	memory to memory
+	reserved 
+
+
+BURST of data
+DMA
+--sends the operation in one clock cycle 

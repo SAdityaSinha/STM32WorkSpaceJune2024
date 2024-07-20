@@ -27,8 +27,84 @@
 // #ifdef UsingHeaderFile
 
 
-#include"RCC_GPIO.h"
+// #include"RCC_GPIO.h"
+#include"main.h"
 #include"passVerifier.h"
+
+
+
+
+#define ENABLE_LED2 (GPIOA->ODR |= (1<<5))
+#define DISABLE_LED2 (GPIOA->ODR &= ~(1<<5))
+
+
+bool isInputPortSet = false;
+bool buttonStatus = false;
+
+
+void setTIM2()
+{
+  //want to set TIM2 APB1
+  RCC->APB1ENR |= (1U<<0); //enabling TM2
+  //considring tm2 to be of 16MHz
+  TIM2->PSC = 16000-1;
+  TIM2->ARR = 1000-1;
+
+  TIM2->CNT = 0; 
+}
+
+// not setting the status registor to 0
+// as we'll use this to drive the press
+void TIM2Delay_forPressCheck(bool buttonStatus)
+{
+ uint32_t MY_ARR_DEFAULT = TIM2->ARR;
+  TIM2->ARR *= 2;
+
+//  TIM2->CNT = 0;
+
+  TIM2->CR1 |= (1<<0);
+  while(!((TIM2->SR)&(0x001)))
+  {
+	buttonStatus = GPIOC->IDR & (1<<13);
+    if(buttonStatus)
+    {
+//      TIM2->ARR = MY_ARR_DEFAULT;
+      return;
+    }
+  }
+  
+  // TIM2->SR &= ~(1<<0);
+ TIM2->ARR = MY_ARR_DEFAULT;
+  return;
+  // TIM2->CR1 
+}
+
+//for the TIM5
+void setTIM5()
+{
+  //want to set TIM2 APB1
+  RCC->APB1ENR |= (1U<<1); //enabling TM2
+  //considring tm2 to be of 16MHz
+  TIM5->PSC = 16000-1;
+  TIM5->ARR = 1000-1;
+
+  TIM5->CNT = 0; 
+}
+
+//void TIM5Delay(int delaySec)
+//{
+//  if(delaySec<2)
+//    {delaySec = 2;}
+//  uint32_t MY_ARR_DEFAULT = TIM5->ARR;
+//
+//}
+
+bool if_pressed()
+{
+	return !((GPIOC->IDR & (1<<13)));
+}
+
+
 
 void blinkLedXtime(int times)
 {
@@ -36,14 +112,69 @@ void blinkLedXtime(int times)
   normalDelay(10);
   while (times>2)
   {
-    times++;
+    times--;
     DISABLE_LED2;
     normalDelay(10);
     ENABLE_LED2;
+    normalDelay(10);
   }
-  normalDelay(10);
   DISABLE_LED2;
+  normalDelay(10);
 }
+
+
+void set_enable_GPIOA()
+{
+  RCC->AHB1ENR |= (1U<<0);
+  // now setting up the 
+  GPIOA->MODER |= (1<<10);					//PA5 mode OUTPUT (01)
+  GPIOA->OTYPER &=~(1<<5);					//
+  GPIOA->OSPEEDR |=(1<<10);
+  GPIOA->PUPDR &=~(3<<10);
+
+}
+void set_enable_GPIOC()
+{
+  RCC->AHB1ENR |= (1U<<2);
+
+  GPIOC->MODER &= ~(3<<13);
+  GPIOC->OTYPER &= ~(1<<13);
+  GPIOC->OSPEEDR &= ~(3<<13);
+  isInputPortSet = true;
+}
+
+
+
+uint32_t press_length(void)
+{
+	uint32_t pressLength = 0;
+	if(if_pressed())
+	{
+		while(if_pressed())
+		{
+			pressLength++;
+		}
+	}
+	return pressLength;
+}
+
+bool pressType(uint32_t pressLength)
+{
+	if(pressLength > 100000)
+		return 1;
+	else
+		return NULL;
+}
+
+
+
+
+//global defaults
+int a[4] = {0,1,1,0};
+// 4 bool for managing seriality of code
+bool passVerifier[4] = {false,false,false,false}; 	
+bool isVerified = false;
+
 
 
 //including the resister
@@ -52,24 +183,49 @@ void blinkLedXtime(int times)
 
 int main()
 {
-  *RCC |= (1<<0);
-  // now setting up the 
-  GPIOA->MODER |= (1<<10);					//PA5 mode OUTPUT (01)
-  GPIOA->OTYPER &=~(1<<5);					//
-  GPIOA->OSPEEDR |=~(1<<10);
-  GPIOA->PUPDR &=~(3<<10);
+  set_enable_GPIOA();
+  set_enable_GPIOC();
 
-  GPIOA->ODR |= (1<<5);           //Enabling the light with GPIOA
 
+//  short int inputDetector;
+  // short 0    long 1
   //now setting the code to detect the 
 
+//  blinkLedXtime(3);
 
+  ////////////////////////////////////
+  uint32_t count =0;
+  bool press_status = 0;
+
+  ////////////////////////////////////
   while (1)
-  {
-    //loops for ever
+   {
 
+ 	  if(if_pressed())
+ 	  {
+ 		  press_status = 1;
+ 		  count = press_length();
+ 	  }
+ 	  else
+ 	  {
+ 		  if(press_status)
+ 		  {
+ 			  press_status = 0;
+ 			  if(pressType(count))
+ 			  {
+// 				  printf("Long Press: %ld\n", count);
+ 				  blinkLedXtime(2);
 
-  }
+ 			  }
+ 			  else
+ 			  {
+ 				  // printf("Short Press: %ld\n", count);
+ 				  blinkLedXtime(4);
+ 			  }
+ 		  }
+ 	  }
+   }
+
   
 
 }
@@ -83,258 +239,241 @@ int main()
 
 
 
+// #ifdef UsingHeaderFile
 
 
+// /* USER CODE END Header */
+// /* Includes ------------------------------------------------------------------*/
+// #include "main.h"
 
-#ifdef UsingHeaderFile
+// /* Private includes ----------------------------------------------------------*/
+// /* USER CODE BEGIN Includes */
 
+// /* USER CODE END Includes */
 
-else
+// /* Private typedef -----------------------------------------------------------*/
+// /* USER CODE BEGIN PTD */
 
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
-#include "main.h"
+// /* USER CODE END PTD */
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+// /* Private define ------------------------------------------------------------*/
+// /* USER CODE BEGIN PD */
 
-/* USER CODE END Includes */
+// /* USER CODE END PD */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
+// /* Private macro -------------------------------------------------------------*/
+// /* USER CODE BEGIN PM */
 
-/* USER CODE END PTD */
+// /* USER CODE END PM */
 
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
+// /* Private variables ---------------------------------------------------------*/
+// UART_HandleTypeDef huart2;
 
-/* USER CODE END PD */
+// /* USER CODE BEGIN PV */
 
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
+// /* USER CODE END PV */
 
-/* USER CODE END PM */
+// /* Private function prototypes -----------------------------------------------*/
+// void SystemClock_Config(void);
+// static void MX_GPIO_Init(void);
+// static void MX_USART2_UART_Init(void);
+// /* USER CODE BEGIN PFP */
 
-/* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart2;
+// /* USER CODE END PFP */
 
-/* USER CODE BEGIN PV */
+// /* Private user code ---------------------------------------------------------*/
+// /* USER CODE BEGIN 0 */
 
-/* USER CODE END PV */
+// /* USER CODE END 0 */
 
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
-/* USER CODE BEGIN PFP */
+// /**
+//   * @brief  The application entry point.
+//   * @retval int
+//   */
+// int main(void)
+// {
 
-/* USER CODE END PFP */
+//   /* USER CODE BEGIN 1 */
 
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
+//   /* USER CODE END 1 */
 
-/* USER CODE END 0 */
+//   /* MCU Configuration--------------------------------------------------------*/
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
+//   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+//   HAL_Init();
 
-  /* USER CODE BEGIN 1 */
+//   /* USER CODE BEGIN Init */
 
-  /* USER CODE END 1 */
+//   /* USER CODE END Init */
 
-  /* MCU Configuration--------------------------------------------------------*/
+//   /* Configure the system clock */
+//   SystemClock_Config();
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+//   /* USER CODE BEGIN SysInit */
 
-  /* USER CODE BEGIN Init */
+//   /* USER CODE END SysInit */
 
-  /* USER CODE END Init */
+//   /* Initialize all configured peripherals */
+//   MX_GPIO_Init();
+//   MX_USART2_UART_Init();
+//   /* USER CODE BEGIN 2 */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+//   /* USER CODE END 2 */
 
-  /* USER CODE BEGIN SysInit */
+//   /* Infinite loop */
+//   /* USER CODE BEGIN WHILE */
+//   while (1)
+//   {
+//     /* USER CODE END WHILE */
 
-  /* USER CODE END SysInit */
+//     /* USER CODE BEGIN 3 */
+//   }
+//   /* USER CODE END 3 */
+// }
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
+// /**
+//   * @brief System Clock Configuration
+//   * @retval None
+//   */
+// void SystemClock_Config(void)
+// {
+//   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+//   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /* USER CODE END 2 */
+//   /** Configure the main internal regulator output voltage
+//   */
+//   __HAL_RCC_PWR_CLK_ENABLE();
+//   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+//   /** Initializes the RCC Oscillators according to the specified parameters
+//   * in the RCC_OscInitTypeDef structure.
+//   */
+//   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+//   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+//   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+//   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+//   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+//   {
+//     Error_Handler();
+//   }
 
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
-}
+//   /** Initializes the CPU, AHB and APB buses clocks
+//   */
+//   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+//                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+//   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+//   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+//   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+//   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+//   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+//   {
+//     Error_Handler();
+//   }
+// }
 
-  /** Configure the main internal regulator output voltage
-  */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+// /**
+//   * @brief USART2 Initialization Function
+//   * @param None
+//   * @retval None
+//   */
+// static void MX_USART2_UART_Init(void)
+// {
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
-  RCC_OscInitStruct.PLL.PLLR = 2;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//   /* USER CODE BEGIN USART2_Init 0 */
 
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+//   /* USER CODE END USART2_Init 0 */
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
+//   /* USER CODE BEGIN USART2_Init 1 */
 
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
+//   /* USER CODE END USART2_Init 1 */
+//   huart2.Instance = USART2;
+//   huart2.Init.BaudRate = 115200;
+//   huart2.Init.WordLength = UART_WORDLENGTH_8B;
+//   huart2.Init.StopBits = UART_STOPBITS_1;
+//   huart2.Init.Parity = UART_PARITY_NONE;
+//   huart2.Init.Mode = UART_MODE_TX_RX;
+//   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+//   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+//   if (HAL_UART_Init(&huart2) != HAL_OK)
+//   {
+//     Error_Handler();
+//   }
+//   /* USER CODE BEGIN USART2_Init 2 */
 
-  /* USER CODE BEGIN USART2_Init 0 */
+//   /* USER CODE END USART2_Init 2 */
 
-  /* USER CODE END USART2_Init 0 */
+// }
 
-  /* USER CODE BEGIN USART2_Init 1 */
+// /**
+//   * @brief GPIO Initialization Function
+//   * @param None
+//   * @retval None
+//   */
+// static void MX_GPIO_Init(void)
+// {
+//   GPIO_InitTypeDef GPIO_InitStruct = {0};
+// /* USER CODE BEGIN MX_GPIO_Init_1 */
+// /* USER CODE END MX_GPIO_Init_1 */
 
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
+//   /* GPIO Ports Clock Enable */
+//   __HAL_RCC_GPIOC_CLK_ENABLE();
+//   __HAL_RCC_GPIOH_CLK_ENABLE();
+//   __HAL_RCC_GPIOA_CLK_ENABLE();
+//   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /* USER CODE END USART2_Init 2 */
+//   /*Configure GPIO pin Output Level */
+//   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
-}
+//   /*Configure GPIO pin : B1_Pin */
+//   GPIO_InitStruct.Pin = B1_Pin;
+//   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+//   GPIO_InitStruct.Pull = GPIO_NOPULL;
+//   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+//   /*Configure GPIO pin : LD2_Pin */
+//   GPIO_InitStruct.Pin = LD2_Pin;
+//   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//   GPIO_InitStruct.Pull = GPIO_NOPULL;
+//   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+// /* USER CODE BEGIN MX_GPIO_Init_2 */
+// /* USER CODE END MX_GPIO_Init_2 */
+// }
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+// /* USER CODE BEGIN 4 */
 
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+// /* USER CODE END 4 */
 
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+// /**
+//   * @brief  This function is executed in case of error occurrence.
+//   * @retval None
+//   */
+// void Error_Handler(void)
+// {
+//   /* USER CODE BEGIN Error_Handler_Debug */
+//   /* User can add his own implementation to report the HAL error return state */
+//   __disable_irq();
+//   while (1)
+//   {
+//   }
+//   /* USER CODE END Error_Handler_Debug */
+// }
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
-}
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
-  /* USER CODE END Error_Handler_Debug */
-}
-
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
-{
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
-}
-#endif /* USE_FULL_ASSERT */
-
-
-
-
-
-#endif  //for the header file configuration
+// #ifdef  USE_FULL_ASSERT
+// /**
+//   * @brief  Reports the name of the source file and the source line number
+//   *         where the assert_param error has occurred.
+//   * @param  file: pointer to the source file name
+//   * @param  line: assert_param error line source number
+//   * @retval None
+//   */
+// void assert_failed(uint8_t *file, uint32_t line)
+// {
+//   /* USER CODE BEGIN 6 */
+//   /* User can add his own implementation to report the file name and line number,
+//      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+//   /* USER CODE END 6 */
+// }
+// #endif /* USE_FULL_ASSERT */
