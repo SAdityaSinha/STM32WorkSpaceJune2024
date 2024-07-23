@@ -32,17 +32,7 @@ void setAllVerifierNULL(bool *passVerifier)
 
 bool updateOnButtonRelease(int *passCode,bool *passVerifier,short int inputDetected)
 {
-	//is onTime signal is short or long
-	// short int inputDetected;
-	// if(OnTime>0 && OnTime<=3)
-	// {
-	// 	inputDetected = 0;
-		
-	// }else if(OnTime>3)
-	// {
-	// 	inputDetected = 1;
-	// }
-	// unsigned int counter:4;		//IDK why bitField is not working 
+	//IDK why bitField is not working
 	int counter = 0;
 	if(passVerifier[0])
 	{
