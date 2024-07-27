@@ -126,13 +126,12 @@ static void MX_USART2_UART_Init(void);
 #define BUTTON_PIN (1<<13)
 
 void EXTI15_10_IRQHandler(void){
-    if(EXTI->PR & BUTTON_PIN){
-        EXTI->PR |= BUTTON_PIN;
-        GPIOA->ODR ^= (1<<5);
-        printf("in EXTI ISR\n");
-    }
+  if(EXTI->PR & BUTTON_PIN){
+      EXTI->PR |= BUTTON_PIN;
+      GPIOA->ODR ^= (1<<5);
+      printf("in EXTI ISR\n");
+  }
 }
-
 
 int main()
 {

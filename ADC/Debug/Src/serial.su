@@ -1,0 +1,6 @@
+../Src/core_cm4.h:1725:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
+../Src/serial.c:15:6:rx_init	4	static
+../Src/serial.c:25:6:rx_interrupt_init	8	static
+../Src/serial.c:30:6:rx_read	4	static
+../Src/serial.c:35:6:tx_init	4	static
+../Src/serial.c:45:6:tx_send	16	static

@@ -1,0 +1,6 @@
+../Src/core_cm4.h:1725:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
+../Src/adc.c:9:6:adc_init	4	static
+../Src/adc.c:17:6:adc_int_init	8	static
+../Src/adc.c:22:6:adc_start_conversion	4	static
+../Src/adc.c:27:10:adc_read	4	static
+../Src/adc.c:32:6:ADC_IRQHandler	16	static
